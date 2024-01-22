@@ -16,10 +16,6 @@ from PIL import Image
 import io
 
 rfid = ""
-
-site = "Site 1" # change this to Site 2 if you want to test the other site
-
-
 duration = 3
 
 app = FastAPI()
@@ -32,70 +28,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# def detect():
-
-#     cap = cv2.VideoCapture(0)
-#     model = YOLO("best.pt")
-
-#     while True:
-#         success, frame = cap.read()
-
-
-#         res = model(frame)
-
-#         res_plotted = res[0].plot(line_width=2, font_size=14)
-#         ret,buffer=cv2.imencode('.jpg',res_plotted)
-#         frame=buffer.tobytes()
-
-
-#         yield(b'--frame\r\n'
-#             b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-
-#     cap.release()
-
-
-
-# import time
-
-# last_detection_time = 0
-# cooldown_duration = 5 
-
-# def detect2():
-
-#     cap = cv2.VideoCapture(0)
-#     model = YOLO("best.pt")
-
-#     while True:
-#         _, frame = cap.read()
-
-#         res = model(frame)
-
-#         res_plotted = res[0].plot(line_width=2, font_size=14)
-#         try:
-#             confidence = res[0].boxes.conf.item()
-#             print(confidence)
-
-#             global last_detection_time
-
-#             if confidence > 0.45 and time.time() - last_detection_time > cooldown_duration:
-#                 print("License Plate Detected !")
-#                 plate = detect_Extract(frame)
-#                 print("PLATE : ", plate)
-
-#                 last_detection_time = time.time()
-
-#         except:
-#             print("No boxes detected in the image.")
-
-#         ret, buffer = cv2.imencode('.jpg', res_plotted)
-#         frame = buffer.tobytes()
-
-#         yield (b'--frame\r\n'
-#                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-
-#     cap.release()
 
 
 def ExtractText(roi):
@@ -133,18 +65,7 @@ def ExtractText(roi):
         for i in range(4):
             letter.append(box.xyxy[0][i].item())
 
-        # plate.append(letter)
         plate.append(labels[int(box.cls.item())])
-
-    # sorted_boxes = sorted(boxes, key=lambda x: x[0].xyxy[0][i],reverse=True)
-    # final_plate = []
-    # for let in sorted_boxes:
-    #     final_plate.append(labels[int(let.cls.item())])
-
-
-    # final_final_plate = ''.join(plate)
-
-    # print(final_final_plate)
     return plate
 
 def detect_Extract(image):
@@ -169,29 +90,6 @@ def detect_Extract(image):
         print(f"IndexError: {e}. No License Plate was detected !") 
         return ["Couldn't Detect a License Plate !"]
       
-
-# @app.get('/licenseplate')
-# def LicensePlate():
-
-#     start_time = time.time()
-#     camera = cv2.VideoCapture(0)
-
-
-#     _, frame = camera.read()
-#     plate = detect_Extract(frame)
-#     sorted_plate = sorted(plate, key=custom_sort)
-#     final_plate = ''.join(sorted_plate)
-#     print("PLATE : ", final_plate)
-#     print("RFID : ",rfid)
-#     # if(result[0] != "Couldn't Detect a License Plate !"):
-#     img = cv2.imread("plate.jpg", cv2.IMREAD_ANYCOLOR)
-#     cv2.imshow("License Plate : "+str(plate[0]),img)
-
-#     time.sleep(3)
-
-#     if time.time() - start_time >= 20:
-#         print("Camera off")
-#         cv2.destroyAllWindows()
         
 @app.post('/rfid')
 async def LicensePlate(data: dict):
@@ -213,8 +111,6 @@ cap = cv2.VideoCapture(0)
 
 @app.get('/licenseplate')
 def LicensePlate():
-
-    # cap = cv2.VideoCapture(0)
     model = YOLO("best.pt")
 
     start_time = time.time()
@@ -237,86 +133,12 @@ def LicensePlate():
                     plate = detect_Extract(frame)
                     sorted_plate = sorted(plate, key=custom_sort)
                     final_plate = ''.join(sorted_plate)
-                    
-
-                    
-
             except:
-                print("No boxes detected in the image.")
-
-
-            
-
-            
+                print("No boxes detected in the image.") 
         else:
             Permission = checkPermission(final_plate,rfid)
             return Permission
-            # return False
 
-        #     ret, buffer = cv2.imencode('.jpg', res[0].plot(line_width=2, font_size=14))
-        #     frame = buffer.tobytes()
-
-        #     yield (b'--frame\r\n'
-        #            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-        # else:
-
-        #     ret, buffer = cv2.imencode('.jpg', frame)
-        #     frame = buffer.tobytes()
-
-        #     yield (b'--frame\r\n'
-        #            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-# def checkPermission(final_plate=None,rfid=None,qrCode=None):
-#     # print("final_plate : ",final_plate)
-#     # print("rfid : ",rfid)
-#     # print("qrCode : ",qrCode)
-#     params = {
-#                         'licensePlateNumber': final_plate,
-#                         'rfidCode': rfid,
-#                         'QrCode': qrCode,
-#                     }
-
-#     response = requests.get("http://localhost:3000/api/parkingusers/fetchUserData",params=params)
-#     response_data = json.loads(response.text)
-#     DBrfid = response_data["Employee"]["rfidCode"]
-#     DBPlate = response_data["Vehicles"][0]["licensePlateNumber"]
-#     Permissions = response_data["Permissions"][0]["AccessPeriods"]
-#     print("PLATE : ", final_plate)
-#     print("RFID : ",rfid)
-#     print("rfidCode from DB : ",DBrfid)
-#     print("licensePlateNumber from DB : ",DBPlate)
-#     print("Permissions : ",Permissions)
-
-#     if rfid == DBrfid and final_plate == DBPlate:
-#         print("Credentials Matched !")
-#         print("Opening the gate !")
-#         # Permission  = has_access(Permissions)
-#         Permission = True
-#         return Permission
-#         # send request to open door
-#     elif rfid == DBrfid and final_plate != DBPlate:
-#         print("Credentials Matched but raising Notif to Security Team for License Plate and sending photo of license plate !") # implement sending photo to the security team
-#         print("Opening the gate !")
-#         # Permission  = has_access(Permissions)
-#         Permission = True
-#         return Permission
-#         # send request to open door
-#     elif rfid != DBrfid and final_plate == DBPlate:
-#         print("Credentials Matched but raising Notif to Security Team for RFID !")
-#         print("Opening the gate !")
-#         # Permission  = has_access(Permissions)
-#         Permission = True
-#         return Permission
-#         # send request to open door
-#         # ?????????????????????????????????????????????????????
-#     else:
-#         print("Credentials didn't match !")
-#         print("Raising Notif to Security Team !")
-#         Permission = False
-#         return Permission
-#         # keep gate closed
-        
 def fetch_data_from_server(params):
     try:
         response = requests.get("http://localhost:3000/api/parkingusers/fetchUserData", params=params)
@@ -362,7 +184,6 @@ def checkPermission(final_plate=None,rfid=None,qrCode=None):
             # Data fetched from the file successfully
             print(file_data[0])
             print("Using data from the file as a fallback.")
-            # Access the relevant information from the file_data[0]
             DBrfid = file_data[0].get("rfidCode", "")
             DBPlate = file_data[0].get("licensePlateNumber", "")
             Permissions = file_data[0].get("sites", [])[0].get("sitePermission", "")
@@ -372,7 +193,6 @@ def checkPermission(final_plate=None,rfid=None,qrCode=None):
             CarBrand = file_data[0].get("vehicles", [])[0].get("brand", "")
             QrCode = file_data[0].get("QrCode", "")
 
-            # Use the extracted information as needed
             print(f"RFID Code: {DBrfid}")
             print(f"License Plate Number: {DBPlate}")
             print(f"Permissions: {Permissions}")
@@ -386,7 +206,6 @@ def checkPermission(final_plate=None,rfid=None,qrCode=None):
             if file_data is not None and len(file_data) > 0:
                 # Data fetched from the file successfully
                 print(file_data[0])
-                # Access the relevant information from the file_data[0]
                 DBrfid = file_data[0].get("rfidCode", "")
                 DBPlate = file_data[0].get("licensePlateNumber", "")
                 Permissions = file_data[0].get("sites", [])[0].get("sitePermission", "")
@@ -396,7 +215,6 @@ def checkPermission(final_plate=None,rfid=None,qrCode=None):
                 CarBrand = file_data[0].get("vehicles", [])[0].get("brand", "")
                 QrCode = file_data[0].get("QrCode", "")
 
-                # Use the extracted information as needed
                 print(f"RFID Code: {DBrfid}")
                 print(f"License  Plate Number: {DBPlate}")
                 print(f"Permissions: {Permissions}")
@@ -410,7 +228,6 @@ def checkPermission(final_plate=None,rfid=None,qrCode=None):
                 if file_data is not None and len(file_data) > 0:
                     # Data fetched from the file successfully
                     print(file_data[0])
-                    # Access the relevant information from the file_data[0]
                     DBrfid = file_data[0].get("rfidCode", "")
                     DBPlate = file_data[0].get("licensePlateNumber", "")
                     Permissions = file_data[0].get("sites", [])[0].get("sitePermission", "")
@@ -420,7 +237,6 @@ def checkPermission(final_plate=None,rfid=None,qrCode=None):
                     CarBrand = file_data[0].get("vehicles", [])[0].get("brand", "")
                     QrCode = file_data[0].get("QrCode", "")
 
-                    # Use the extracted information as needed
                     print(f"RFID Code: {DBrfid}")
                     print(f"License  Plate Number: {DBPlate}")
                     print(f"Permissions: {Permissions}")
@@ -457,37 +273,24 @@ def checkPermission(final_plate=None,rfid=None,qrCode=None):
 
         if rfid == DBrfid and final_plate == DBPlate:
             print("Credentials Matched !")
-            # print("Opening the gate !")
             Permission  = has_access(Permissions)
             print("Permission : ", Permission)
-            # Permission = True
             return Permission
-            # send request to open door
         elif rfid == DBrfid and final_plate != DBPlate:
             print("Credentials Matched but raising Notif to Security Team for License Plate and sending photo of license plate !")
-            # print("Opening the gate !")
             Permission  = has_access(Permissions)
             print("Permission : ", Permission)
-
-            # Permission = True
             return Permission
-            # send request to open door
         elif rfid != DBrfid and final_plate == DBPlate:
             print("Credentials Matched but raising Notif to Security Team for RFID !")
-            # print("Opening the gate !")
             Permission  = has_access(Permissions)
             print("Permission : ", Permission)
-
-            # Permission = True
             return Permission
-            # send request to open door
-            # ?????????????????????????????????????????????????????
         else:
             print("Credentials didn't match !")
             print("Raising Notif to Security Team !")
             Permission = False
             return Permission
-            # keep gate closed
     else:
         if server_data is not None and len(server_data) > 0:
 
@@ -506,65 +309,6 @@ def checkPermission(final_plate=None,rfid=None,qrCode=None):
             print("Type", Type)
             print("qrCode", qrCode)
             qrcodevalue = ""
-
-        #     if Type == "Visitor":
-        #         print("Visitor detected. Checking QR Code, Scan in Camera ...")
-        #         qrcodevalue = read_qr_code_from_webcam()
-        #         if qrcodevalue == "":
-        #             print("QR Code not found. Raising Notif to Security Team !")
-        #             Permission = False
-        #             return Permission
-        #         elif   qrCode == qrcodevalue and DBPlate != final_plate:
-        #             print("QR Code found. Checking permissions...")
-        #             Permission = has_access(Permissions)
-        #             print("Permission : ", Permission)
-        #             print("Credentials Matched but raising Notif to Security Team for License Plate and sending photo of license plate !")
-        #             print("Opening the gate !")
-        #             return Permission
-        #         elif   qrCode == qrcodevalue and DBPlate == final_plate:
-        #             print("QR Code found. Checking permissions...")
-        #             Permission = has_access(Permissions)
-        #             print("Permission : ", Permission)
-        #             return Permission
-
-        #     if rfid == DBrfid and final_plate == DBPlate:
-        #         print("Credentials Matched !")
-        #         # print("Opening the gate !")
-        #         Permission  = has_access(Permissions)
-        #         print("Permission : ", Permission)
-        #         # Permission = True
-        #         return Permission
-        #         # send request to open door
-        #     elif rfid == DBrfid and final_plate != DBPlate:
-        #         print("Credentials Matched but raising Notif to Security Team for License Plate and sending photo of license plate !")
-        #         # print("Opening the gate !")
-        #         Permission  = has_access(Permissions)
-        #         print("Permission : ", Permission)
-
-        #         # Permission = True
-        #         return Permission
-        #         # send request to open door
-        #     elif rfid != DBrfid and final_plate == DBPlate:
-        #         print("Credentials Matched but raising Notif to Security Team for RFID !")
-        #         # print("Opening the gate !")
-        #         Permission  = has_access(Permissions)
-        #         print("Permission : ", Permission)
-
-        #         # Permission = True
-        #         return Permission
-        #         # send request to open door
-        #         # ?????????????????????????????????????????????????????
-        #     else:
-        #         print("Credentials didn't match !")
-        #         print("Raising Notif to Security Team !")
-        #         Permission = False
-        #         return Permission
-        #         # keep gate closed
-        # else:
-        #     # No data available
-        #     print("No data available.")
-        #     Permission = False
-        #     return Permission
             if Type == "Visitor":
                 print("Visitor detected. Checking QR Code, Scan in Camera ...")
                 qrcodevalue = read_qr_code_from_webcam()
@@ -587,21 +331,16 @@ def checkPermission(final_plate=None,rfid=None,qrCode=None):
 
             if rfid == DBrfid and final_plate == DBPlate:
                 print("Credentials Matched !")
-                # print("Opening the gate !")
                 Permission  = has_access(Permissions)
                 print("Permission : ", Permission)
-                # Permission = True
                 return Permission
-                # send request to open door
             elif rfid == DBrfid and final_plate != DBPlate:
                 print("Credentials Matched but raising Notif to Security Team for License Plate and waiting for a decision !")
-                # print("Opening the gate !")
                 Permission  = has_access(Permissions)
                 print("Permission : ", Permission)
                 if Permission == True:
                     print("Credentials Matched and permission is granted but raising Notif to Security Team for License Plate and waiting for a decision !")
                 return False
-                # send request to open door
             elif rfid != DBrfid and final_plate == DBPlate:
                 print("Credentials Matched but raising Notif to Security Team for RFID !")
                 Permission  = has_access(Permissions)
@@ -623,7 +362,6 @@ def checkPermission(final_plate=None,rfid=None,qrCode=None):
 import pyzbar.pyzbar as pyzbar
 
 def read_qr_code_from_webcam():
-    # Start the webcam
     time.sleep(3)
 
     while True:
@@ -720,23 +458,16 @@ def hash_string(input_string):
     hashed_string = sha256_hash.hexdigest()
     return hashed_string
 
-# Example usage:
-# permission_table = [5, 2, 3, 4, 1, 0, [1, 2]]
-# if has_access(permission_table):
-#     print("User has access at the current moment.")
-# else:
-#     print("User does not have access at the current moment.")
 
 def LicensePlate2():
 
-    # cap = cv2.VideoCapture(0)
     model = YOLO("best.pt")
 
 
     global processing_enabled
     while True:
         _, frame = cap.read()
-        res = model(frame)
+        res = model(frame, verbose=False)
         res_plotted = res[0].plot(line_width=2, font_size=14)
         ret, buffer = cv2.imencode('.jpg', res_plotted)
         frame = buffer.tobytes()
@@ -744,13 +475,6 @@ def LicensePlate2():
         yield (b'--frame\r\n'
                 b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-
-
-# @app.get('/licenseplate')
-# def video():
-#     # return StreamingResponse(detect(),media_type ='multipart/x-mixed-replace; boundary=frame')
-#     # return StreamingResponse(detect2(),media_type ='multipart/x-mixed-replace; boundary=frame')
-#     return StreamingResponse(LicensePlate(),media_type ='multipart/x-mixed-replace; boundary=frame')
 
 @app.get('/video')
 def video2():
