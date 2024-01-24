@@ -1,0 +1,69 @@
+[
+  {
+    "rfidCode": "001",
+    "licensePlateNumber": "112259h",
+    "name": "sohaib",
+    "type": "Employee",
+    "sites": [
+      {
+        "siteName": "Site1",
+        "siteAddress": "Address 1",
+        "sitePermission": "[\"1\",\"1\",\"1\",\"1\",\"1\",\"1\",\"0\"]"
+      },
+      {
+        "siteName": "Site2",
+        "siteAddress": "Address 2",
+        "sitePermission": "[\"2\",\"2\",\"2\",\"2\",\"2\",\"2\",\"0\"]"
+      }
+    ],
+    "vehicles": [
+      {
+        "brand": "Range Rover"
+      }
+    ],
+    "QrCode": ""
+  },
+  {
+    "rfidCode": "002",
+    "licensePlateNumber": "1234579a",
+    "name": "saadeddine",
+    "type": "Employee",
+    "sites": [
+      {
+        "siteName": "Site1",
+        "siteAddress": "Address 1",
+        "sitePermission": "[\"1\",\"1\",\"1\",\"1\",\"1\",\"1\",\"0\"]"
+      },
+      {
+        "siteName": "Site2",
+        "siteAddress": "Address 2",
+        "sitePermission": "[\"1\",\"1\",\"1\",\"1\",\"1\",\"1\",\"0\"]"
+      }
+    ],
+    "vehicles": [
+      {
+        "brand": "Renault"
+      }
+    ],
+    "QrCode": ""
+  },
+  {
+    "rfidCode": "",
+    "licensePlateNumber": "0012246a",
+    "name": "yassir",
+    "type": "Visitor",
+    "sites": [
+      {
+        "siteName": "Site1",
+        "siteAddress": "Address 1",
+        "sitePermission": "[\"0\",\"5\",\"5\",\"0\",\"0\",\"0\",[\"0\",\"1\"]]"
+      }
+    ],
+    "vehicles": [
+      {
+        "brand": "Mercedes"
+      }
+    ],
+    "QrCode": "yassiramami"
+  }
+]
