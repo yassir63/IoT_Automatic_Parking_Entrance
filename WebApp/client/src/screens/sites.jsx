@@ -41,7 +41,7 @@ export default function ParkingUsers() {
     <>
 
       <div className='flex justify-end '>
-        <Link to='/ajouter-site' className=" my-3 bg-green-600 rounded mr-7 p-2 text-white font-bold">+ Ajouter</Link>
+        <Link to='.' className=" my-3 bg-green-600 rounded mr-7 p-2 text-white font-bold">+ Ajouter</Link>
       </div>
 
 

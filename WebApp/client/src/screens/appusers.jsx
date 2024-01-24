@@ -41,7 +41,7 @@ export default function Appusers() {
     <>
 
       <div className='flex justify-end '>
-        <Link to='/ajouter-user' className=" my-3 bg-green-600 rounded mr-7 p-2 text-white font-bold">+ Ajouter</Link>
+        <Link to='/add-appUser' className=" my-3 bg-green-600 rounded mr-7 p-2 text-white font-bold">+ Ajouter</Link>
       </div>
 
 

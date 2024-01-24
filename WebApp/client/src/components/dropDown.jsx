@@ -1,6 +1,4 @@
 import { IoIosArrowDropdownCircle } from 'react-icons/Io';
-import { BiSolidEditAlt } from 'react-icons/Bi';
-import { AiFillDelete, AiFillEye } from 'react-icons/ai';
 import { useState, useContext } from 'react';
 import Modal from './modal';
 import { useNavigate } from 'react-router-dom';
