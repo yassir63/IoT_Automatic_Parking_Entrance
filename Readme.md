@@ -31,10 +31,19 @@ This repository hosts the code for the demo part of our Automated Parking Soluti
       ```bash
        ./startspeedy.bat
 2. **Web Startup**:
-   - navigate to the WebApp folder, api, and client subfolders, and run:
+   - navigate to the WebApp folder, api, and client subfolders, and run: ("npm i" for Dependencies)
 
-      ```bash
-       npm start
+   For the api:(Mandatoryfor the project)
+      - first you must have SQL DATABASE then create one named "dbIOT"
+      - second uncomment the code in "WebApp/api/src/index.js" and run the api to create all the tables.(for the first time)
+      To Run api: Run "npm start" in "WebApp/api"
+      - Then Run "npx sequelize-cli db:seed:all" in "WebApp/api" to insert some test data.
+      - comment the code and restart the api.
+   
+   For the client:(optional)
+      - Run "npm run dev" in "WebApp/client"
+
+      
 ## Dependencies
 
 Before running the project, make sure to install the required dependencies:
